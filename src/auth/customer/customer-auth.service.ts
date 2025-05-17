@@ -1,28 +1,27 @@
 import {
-  BadRequestException,
   ForbiddenException,
   Injectable,
   UnauthorizedException,
 } from "@nestjs/common";
 import { JwtService } from "@nestjs/jwt";
-import { AdminDocument } from "../admin/schemas/admin.schema";
-import { LoginDto } from "./dto/login.dto";
-import { AdminService } from "../admin/admin.service";
+import { LoginDto } from "../dto/login.dto";
 import * as bcrypt from "bcrypt";
 import { Response } from "express";
+import { CustomerDocument } from "../../customer/schemas/customer.schema";
+import { CustomerService } from "../../customer/customer.service";
 
 @Injectable()
-export class AuthService {
+export class CustomerAuthService {
   constructor(
     private readonly jwtService: JwtService,
-    private readonly adminService: AdminService
+    private readonly customerService: CustomerService
   ) {}
 
-  async generateTokens(admin: AdminDocument) {
+  async generateTokens(customer: CustomerDocument) {
     const payload = {
-      id: admin._id,
-      is_active: admin.is_active,
-      is_creator: admin.is_creator,
+      id: customer._id,
+      email: customer.email,
+      gender: customer.gender,
     };
 
     const [accessToken, refreshToken] = await Promise.all([
@@ -41,51 +40,51 @@ export class AuthService {
     };
   }
 
-  async loginAdmin(loginDto: LoginDto, res: Response) {
-    const admin = await this.adminService.findByEmail(loginDto.email);
-    if (!admin) {
+  async login(loginDto: LoginDto, res: Response) {
+    const customer = await this.customerService.findByEmail(loginDto.email);
+    if (!customer) {
       throw new UnauthorizedException("Email yoki Parol noto'g'ri");
     }
     const isMatch = await bcrypt.compare(
       loginDto.password,
-      admin.hashed_password
+      customer.hashed_password
     );
     if (!isMatch) {
       throw new UnauthorizedException("Email yoki Parol noto'g'ri");
     }
-    const { accessToken, refreshToken } = await this.generateTokens(admin);
+    const { accessToken, refreshToken } = await this.generateTokens(customer);
     res.cookie("refreshToken", refreshToken, {
       httpOnly: true,
       maxAge: Number(process.env.COOKIE_TIME),
     });
-    const hashed_refresh_token = await bcrypt.hash(refreshToken, 7)
-    admin.hashed_refresh_token = hashed_refresh_token
-    await admin.save()
-    return{
-        message:"Xush kelibsiz",
-        adminId:admin._id,
-        accessToken
-    }
+    const hashed_refresh_token = await bcrypt.hash(refreshToken, 7);
+    customer.hashed_refresh_token = hashed_refresh_token;
+    await customer.save();
+    return {
+      message: "Xush kelibsiz",
+      adminId: customer._id,
+      accessToken,
+    };
   }
 
   async logOut(refreshToken: string, res: Response) {
-    const adminData = await this.jwtService.verify(refreshToken, {
+    const customerData = await this.jwtService.verify(refreshToken, {
       secret: process.env.REFRESH_TOKEN_KEY,
     });
 
-    if (!adminData) {
-      throw new ForbiddenException("Admin not verified");
+    if (!customerData) {
+      throw new ForbiddenException("Customer not verified");
     }
 
     const hashed_refresh_token = null;
-    await this.adminService.updateRefreshToken(
-      adminData._id,
+    await this.customerService.updateRefreshToken(
+      customerData._id,
       hashed_refresh_token!
     );
 
     res.clearCookie("refresh_token");
     const response = {
-      message: "Admin logged out successfully",
+      message: "Customer logged out successfully",
     };
 
     return response;

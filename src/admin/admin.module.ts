@@ -3,7 +3,6 @@ import { AdminService } from "./admin.service";
 import { AdminController } from "./admin.controller";
 import { MongooseModule } from "@nestjs/mongoose";
 import { Admin, AdminSchema } from "./schemas/admin.schema";
-import { JwtModule } from "@nestjs/jwt";
 
 @Module({
   imports: [
@@ -16,6 +15,6 @@ import { JwtModule } from "@nestjs/jwt";
   ],
   controllers: [AdminController],
   providers: [AdminService],
-  exports:[AdminService]
+  exports: [AdminService],
 })
 export class AdminModule {}
