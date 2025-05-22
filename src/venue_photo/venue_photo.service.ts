@@ -1,26 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateVenuePhotoDto } from './dto/create-venue_photo.dto';
 import { UpdateVenuePhotoDto } from './dto/update-venue_photo.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { VenuePhoto } from './schemas/venue_photo.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class VenuePhotoService {
+  constructor(@InjectModel(VenuePhoto.name) private venuePhotoSchema:Model<VenuePhoto>){}
+
   create(createVenuePhotoDto: CreateVenuePhotoDto) {
-    return 'This action adds a new venuePhoto';
+    return this.venuePhotoSchema.create(createVenuePhotoDto);
   }
 
   findAll() {
-    return `This action returns all venuePhoto`;
+    return this.venuePhotoSchema.find();
   }
 
   findOne(id: number) {
-    return `This action returns a #${id} venuePhoto`;
+    return this.venuePhotoSchema.findOne({id});
   }
 
   update(id: number, updateVenuePhotoDto: UpdateVenuePhotoDto) {
-    return `This action updates a #${id} venuePhoto`;
+    return this.venuePhotoSchema.findOneAndUpdate({id}, updateVenuePhotoDto, {new:true});
   }
 
   remove(id: number) {
-    return `This action removes a #${id} venuePhoto`;
+    return this.venuePhotoSchema.findOneAndDelete({id});
   }
 }

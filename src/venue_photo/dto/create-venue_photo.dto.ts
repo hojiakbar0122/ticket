@@ -1,1 +1,4 @@
-export class CreateVenuePhotoDto {}
+export class CreateVenuePhotoDto {
+  venueId: string;
+  name: string;
+}

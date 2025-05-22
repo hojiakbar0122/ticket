@@ -1,26 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { CreateCustomerCardDto } from './dto/create-customer_card.dto';
 import { UpdateCustomerCardDto } from './dto/update-customer_card.dto';
+import { InjectModel } from '@nestjs/mongoose';
+import { CustomerCard } from './schemas/customer_card.schema';
+import { Model } from 'mongoose';
 
 @Injectable()
 export class CustomerCardService {
+  constructor(@InjectModel(CustomerCard.name) private readonly customerCardSchema:Model<CustomerCard>){}
+
   create(createCustomerCardDto: CreateCustomerCardDto) {
-    return 'This action adds a new customerCard';
+    return this.customerCardSchema.create(createCustomerCardDto);
   }
 
   findAll() {
-    return `This action returns all customerCard`;
+    return this.customerCardSchema.find();
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} customerCard`;
+  findOne(id: string) {
+    return this.customerCardSchema.findById(id);
   }
 
-  update(id: number, updateCustomerCardDto: UpdateCustomerCardDto) {
-    return `This action updates a #${id} customerCard`;
+  update(id: string, updateCustomerCardDto: UpdateCustomerCardDto) {
+    return this.customerCardSchema.findByIdAndUpdate(id, updateCustomerCardDto, {new:true});
   }
 
-  remove(id: number) {
-    return `This action removes a #${id} customerCard`;
+  remove(id: string) {
+    return this.customerCardSchema.findByIdAndDelete(id);
   }
 }

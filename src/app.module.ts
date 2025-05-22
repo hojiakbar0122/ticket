@@ -18,6 +18,13 @@ import { EventModule } from './event/event.module';
 import { EventTypeModule } from './event_type/event_type.module';
 import { HumanCategoryModule } from './human_category/human_category.module';
 import { TicketModule } from './ticket/ticket.module';
+import { TicketStatusModule } from './ticket_status/ticket_status.module';
+import { LangModule } from './lang/lang.module';
+import { CartItemModule } from './cart_item/cart_item.module';
+import { CartModule } from './cart/cart.module';
+import { BookingModule } from './booking/booking.module';
+import { PaymentPethodModule } from './payment_pethod/payment_pethod.module';
+import { DeliveryPethodModule } from './delivery_pethod/delivery_pethod.module';
 
 @Module({
   imports: [
@@ -40,6 +47,13 @@ import { TicketModule } from './ticket/ticket.module';
     EventTypeModule,
     HumanCategoryModule,
     TicketModule,
+    TicketStatusModule,
+    LangModule,
+    CartItemModule,
+    CartModule,
+    BookingModule,
+    PaymentPethodModule,
+    DeliveryPethodModule,
   ],
   controllers: [],
   providers: [],

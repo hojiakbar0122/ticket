@@ -1,5 +1,7 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
-import { HydratedDocument } from "mongoose";
+import mongoose, { HydratedDocument } from "mongoose";
+import { CustomerAddress } from "../../customer_address/schemas/customer_address.schema";
+import { CustomerCard } from "../../customer_card/schemas/customer_card.schema";
 
 export type CustomerDocument = HydratedDocument<Customer>;
 
@@ -14,7 +16,7 @@ export class Customer {
   @Prop()
   phone: string;
 
-  @Prop({required:true})
+  @Prop({ required: true })
   email: string;
 
   @Prop()
@@ -28,6 +30,26 @@ export class Customer {
 
   @Prop()
   hashed_refresh_token: string;
+
+  @Prop({
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CustomerAddress",
+      },
+    ],
+  })
+  customerAddresses: CustomerAddress[];
+
+  @Prop({
+    type: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "CustomerCard",
+      },
+    ],
+  })
+  customerCards: CustomerCard[];
 }
 
 export const CustomerSchema = SchemaFactory.createForClass(Customer);
